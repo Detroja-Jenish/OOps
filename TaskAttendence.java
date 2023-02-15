@@ -11,27 +11,28 @@ public class TaskAttendence{
 class Class{
     
     private int classNo;
-    private int isPresent[];
     private int noOfStudents;
+    private int isPresent[];
     Class(Scanner sc){
         
         System.out.print("enter A = 1, B = 2, C = 3, D = 4 , H = 5 : ");
         classNo = sc.nextInt();
-        System.out.println("enter number of students");
+        System.out.print("enter number of students : ");
         noOfStudents = sc.nextInt();
-        isPresent = new int[noOfStudents]
+        isPresent = new int[noOfStudents];
        
     }
     void takeAttendence(Scanner sc){
-        for(int i=0; i<6; i++){
-            System.out.print((i+1) + " : ");
+        for(int i=0; i<noOfStudents; i++){
+			System.out.print( (i + 1 + (100*classNo)) + " : ");
             isPresent[i] = sc.nextInt();
         }
     }
     void showAbesentStudent(){
-        for(int i = 0; i<6; i++){
+		System.out.println("\n\n\n\nAbsent Students are _____ : \n");
+        for(int i = 0; i<noOfStudents;i++){
             if(isPresent[i] == 0){
-                System.out.println(((i+1) +(100*classNo)));
+                System.out.println(( i + 1 + (100*classNo)));
             }
         }
     }
