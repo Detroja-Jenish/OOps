@@ -1,5 +1,6 @@
 // first calcu;ate childs and then convert it in string and store in parents myExpression
 // make differnce between parent , neighbour and child constructor 
+//package chapter3;
 import java.util.ArrayList;
 import java.lang.NumberFormatException;
 import java.util.Scanner;
@@ -27,6 +28,9 @@ class Expression{
 	double childAns;
 	int childCount = 0;
 
+	Expression(){
+	}
+
 	Expression(String e){
 		allExpressions = e.split(" ");
 	}
@@ -35,8 +39,47 @@ class Expression{
 		this.myExpression = myExpression;
 	}
 
-	void createStructure(){
-		createStructure( allExpressions, 0 );
+	public void setAllExpressions(String function){
+		allExpressions = function.split(" ");
+	}
+
+	public void createStructure(){
+		createStructure2( allExpressions, 0 );
+	}
+
+	void createStructure2(String[] allExpressions, int index){
+		// x + ( ( 2 * x ) / y )
+		System.out.print(index + "  " );
+		if( index == allExpressions.length ){
+			return;
+		}else if(myExpression == null){
+			System.out.println( " expression was set " );
+			myExpression = allExpressions[ index ];
+			createStructure2( allExpressions, index + 1);
+		}else if(relation != null){
+			//neighbour node
+			System.out.println( "neighbour node created.... "+ allExpressions[ index ]);
+			neighbour = new Expression( parent, allExpressions[ index ]);
+			neighbour.createStructure2( allExpressions, index + 1 );
+		}else if(allExpressions[index].equals("+") || allExpressions[index].equals("-") || allExpressions[index].equals("*") || allExpressions[index].equals("/") || allExpressions[index].equals("^")){
+			relation = allExpressions[index];
+			System.out.println("applied relation   " + allExpressions[ index ] + "  to  " + myExpression);
+			createStructure2(allExpressions, index + 1);
+		}else if(myExpression.equals("(") || allExpressions[ index ].equals("(")){
+			//create child
+			System.out.println( "child node created.... "+ allExpressions[ index ]);
+			Expression childNode = new Expression( this, allExpressions[ index ]);
+			childs.add( childNode );
+			childNode.createStructure2( allExpressions, index+1);
+		}else if( allExpressions[ index ].equals(")") ){
+			System.out.println( "Back to the parentNode" ); 
+			parent.createStructure2( allExpressions, index + 1 );
+		}else{
+			//neighbour Node
+			System.out.println( "neighbour node created...2 "+ allExpressions[ index ]);
+			neighbour = new Expression( parent, allExpressions[ index ] );
+			neighbour.createStructure2( allExpressions, index + 1 );
+		}
 	}
 
 	void createStructure(String[] allExpressions, int index){
@@ -45,10 +88,19 @@ class Expression{
 			return;
 		}
 		else if( allExpressions[index].equals("(") ){
-			Expression dummy = new Expression(this, allExpressions[index+1] );
-			this.childs.add(dummy);
-			System.out.println("create child node   "+ allExpressions[ index + 1 ]);
-			dummy.createStructure(allExpressions, index + 2 );	
+			Expression dummy;
+			if(relation != null){ 
+				neighbour = new Expression(parent, allExpressions[index]);
+				System.out.println("create neighbour node   "+ allExpressions[index]);
+				neighbour.createStructure(allExpressions, index + 1);
+			}else{
+				dummy = new Expression(this, allExpressions[ index ]);
+				childs.add(dummy);
+				System.out.println("create child node   "+ allExpressions[ index + 1 ]);
+				dummy.createStructure( allExpressions, index + 1);
+			}
+
+			//dummy.createStructure(allExpressions, index + 2 );	
 		}
 		else if(allExpressions[index].equals("+") || allExpressions[index].equals("-") || allExpressions[index].equals("*") || allExpressions[index].equals("/") || allExpressions[index].equals("^")){
 			this.relation = allExpressions[index];
@@ -61,11 +113,11 @@ class Expression{
 				myExpression = allExpressions[index];
 				System.out.println("------------" + myExpression);
 				createStructure(allExpressions, index+1);
-//			}else if(allExpressions[index].equals("sin")){
-//				System.out.println("------------" + myExpression);
-//				myExpression = allExpressions[index];
-//				System.out.println("------------" + myExpression);
-//				createStructure(allExpressions, index+1);
+			}else if(myExpression.equals("(")){
+				Expression dummy = new Expression(this, allExpressions[ index ]);
+				childs.add(dummy);
+				System.out.println("create child node   "+ allExpressions[ index + 1 ]);
+				dummy.createStructure( allExpressions, index + 1);
 			}
 			else{
 				Expression dummy = new Expression(parent, allExpressions[ index ]);
@@ -76,6 +128,9 @@ class Expression{
 		}
 		else{
 			System.out.println("return to parent node");
+			if(parent.myExpression == null){
+				parent.myExpression = " ";
+			}
 			this.parent.createStructure(allExpressions, index+1);
 		}
 	}
@@ -99,105 +154,10 @@ class Expression{
 
 	}
 
-		
-
-//	double evaluate( double x, double y){
-//		Expression dummy = this;
-//		while( dummy.neighbour != null || dummy.childs.length > 0){
-//			if(dummy.childs.length > 0){
-//				dummy.childs.get(0).evaluate( x, y);
-//			}
-//		}
-//
-//	}
-//
-//	double mathFunctions(String expression, double x, double y){
-//		try{
-//			return Double.parseDouble( expression );
-//		}finally{
-//			if( expression.equals("sin") ){
-//				return Math.sin( x );
-//			}else if(expression.equals("x")){
-//				return x;
-//			}else if(expression.equals("y")){
-//				return y;
-//			}
-//		}
-//	}
-//	double mathFunctions(double a, String relation, double b, double x, double y){
-//		if(relation.equals("+")){
-//			return a + b;
-//		}else if(relation.equals("-")){
-//			return a - b;
-//		}else if(relation.equals("*")){
-//			return a * b;
-//		}
-//		return a/b;
-//	}
-//
-//	double mathFunctions(String expression, String relation, double b, double x, double y){
-//		double a;
-//		try{
-//			a = Double.parseDouble( expression );
-//		}catch(NumberFormatException e){
-//			if(expression.equals("x")){
-//				a = x;
-//			}else if(expression.equals("y")){
-//				a = y;
-//			}else{
-//				a = 1;
-//			}
-//		}
-//		return mathFunctions(a, relation, b, x, y);
-//	}
-//
-//	double mathFunctions( String expression, String relation, String neighbourExpression, double x, double y){
-//		double a, b;
-//		try{
-//			a = Double.parseDouble( expression );
-//		}catch(NumberFormatException e){
-//			if(expression.equals("x")){
-//				a = x;
-//			}else if(expression.equals("y")){
-//				a = y;
-//			}
-//			else{
-//				a = 1;
-//			}
-//		}
-//
-//		try{
-//			b = Double.parseDouble( neighbourExpression );
-//		}catch(NumberFormatException e){
-//			if(neighbourExpression.equals("x")){
-//				b = x;
-//			}else if(neighbourExpression.equals("y")){
-//				b = y;
-//			}else{
-//				b = 1;
-//			}
-//		}
-//		return mathFunctions(a, relation, b, x, y);
-//
-//	}
-//
-//	double evaluate(double x, double y){
-//	//	Expression dummy = this;
-//		if(neighbour == null ){
-//			if( child.size() > 0){
-//				childAns = childs.size();
-//			}else{
-//
-//		}
-//		
-//		if(neighbour.neighbour == null){
-//			return mathFunctions(myExpression, relation, neighbour.myExpression, x, y);
-//		}
-//		return mathFunctions(myExpression, relation, neighbour.evaluate(x,y), x, y);
-//
-//	}
-//
 	double evaluate2( double x, double y){
+		if(neighbour == null){
+			return selfEvaluate(x,y);
+		}
 		if(neighbour.neighbour == null){
 			return mathFunction2a(selfEvaluate(x,y), relation, neighbour.selfEvaluate(x,y));
 		}
@@ -263,3 +223,4 @@ class Expression{
 		return 1;
 	}
 }
+
