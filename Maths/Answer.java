@@ -9,9 +9,15 @@ import java.lang.NumberFormatException;
 import java.util.Scanner;
 
 public class Answer{
-	public static void main(String ars[]){
-		Euler e1 = new Euler();
-		System.out.println(e1.answer());
+	public static void main(String args[]){
+
+		ModifiedEuler e = new ModifiedEuler();
+
+		System.out.println("\n\n\n\n\n");
+		//e.print();
+		//System.out.println("\n\n\n\n\n");
+		System.out.println("\n\nanswer at ( 4, 2 ) = " + e.evaluate(4,2));
+		System.out.println("solved answer = " + e.solve());
 	}
 }
 
@@ -27,6 +33,11 @@ class Expression{
 	int childCount = 0;
 
 	Expression(){
+		Scanner sc = new Scanner( System.in );
+		String function = sc.nextLine();
+		allExpressions = function.split(" ");
+
+		createStructure();
 	}
 
 	Expression(String e){
@@ -46,58 +57,40 @@ class Expression{
 	}
 
 	void createStructure(String[] allExpressions, int index){
+		// x + ( ( 2 * x ) / y )
+		System.out.print(index + "  " );
 		if( index == allExpressions.length ){
-			System.out.println("exited");
 			return;
-		}
-		else if( allExpressions[index].equals("(") ){
-			Expression dummy;
-			if(relation != null){ 
-				Expression dummyNeighbour = new Expression();
-				neighbour = dummyNeighbour;
-				dummy = new Expression(neighbour, allExpressions[index+1] );
-				neighbour.childs.add(dummy);
-
-			}else{
-				dummy = new Expression(this, allExpressions[ index + 1 ]);
-				childs.add(dummy);
-			}
-
-			System.out.println("create child node   "+ allExpressions[ index + 1 ]);
-			dummy.createStructure(allExpressions, index + 2 );	
-		}
-		else if(allExpressions[index].equals("+") || allExpressions[index].equals("-") || allExpressions[index].equals("*") || allExpressions[index].equals("/") || allExpressions[index].equals("^")){
-			this.relation = allExpressions[index];
+		}else if(myExpression == null){
+			System.out.println( " expression was set " );
+			myExpression = allExpressions[ index ];
+			createStructure( allExpressions, index + 1);
+		}else if(relation != null){
+			//neighbour node
+			System.out.println( "neighbour node created.... "+ allExpressions[ index ]);
+			neighbour = new Expression( parent, allExpressions[ index ]);
+			neighbour.createStructure( allExpressions, index + 1 );
+		}else if(allExpressions[index].equals("+") || allExpressions[index].equals("-") || allExpressions[index].equals("*") || allExpressions[index].equals("/") || allExpressions[index].equals("^")){
+			relation = allExpressions[index];
 			System.out.println("applied relation   " + allExpressions[ index ] + "  to  " + myExpression);
 			createStructure(allExpressions, index + 1);
-		}
-		else if(!allExpressions[ index ].equals(")") ){
-			if(myExpression == null){
-				System.out.println("------------" + myExpression);
-				myExpression = allExpressions[index];
-				System.out.println("------------" + myExpression);
-				createStructure(allExpressions, index+1);
-//			}else if(allExpressions[index].equals("sin")){
-//				System.out.println("------------" + myExpression);
-//				myExpression = allExpressions[index];
-//				System.out.println("------------" + myExpression);
-//				createStructure(allExpressions, index+1);
-			}
-			else{
-				Expression dummy = new Expression(parent, allExpressions[ index ]);
-				this.neighbour = dummy;
-				System.out.println("create neighbour node   "+ allExpressions[index]);
-				dummy.createStructure(allExpressions, index+1);
-			}
-		}
-		else{
-			System.out.println("return to parent node");
-			if(parent.myExpression == null){
-				parent.myExpression = " ";
-			}
-			this.parent.createStructure(allExpressions, index+1);
+		}else if(myExpression.equals("(") || allExpressions[ index ].equals("(")){
+			//create child
+			System.out.println( "child node created.... "+ allExpressions[ index ]);
+			Expression childNode = new Expression( this, allExpressions[ index ]);
+			childs.add( childNode );
+			childNode.createStructure( allExpressions, index+1);
+		}else if( allExpressions[ index ].equals(")") ){
+			System.out.println( "Back to the parentNode" ); 
+			parent.createStructure( allExpressions, index + 1 );
+		}else{
+			//neighbour Node
+			System.out.println( "neighbour node created...2 "+ allExpressions[ index ]);
+			neighbour = new Expression( parent, allExpressions[ index ] );
+			neighbour.createStructure( allExpressions, index + 1 );
 		}
 	}
+
 	void print(){
 		if(neighbour == null){
 			System.out.println(myExpression);
@@ -118,27 +111,27 @@ class Expression{
 
 	}
 
-	double evaluate2( double x, double y){
+	double evaluate( double x, double y){
 		if(neighbour == null){
 			return selfEvaluate(x,y);
 		}
 		if(neighbour.neighbour == null){
-			return mathFunction2a(selfEvaluate(x,y), relation, neighbour.selfEvaluate(x,y));
+			return mathFunction(selfEvaluate(x,y), relation, neighbour.selfEvaluate(x,y));
 		}
 
-		return mathFunction2a(selfEvaluate(x,y), relation, neighbour.evaluate2(x,y));
+		return mathFunction(selfEvaluate(x,y), relation, neighbour.evaluate(x,y));
 	}
 	double selfEvaluate(double x, double y){
 		if(childs.size() > 0){
-			childAns = childs.get(0).evaluate2(x,y);
-			return  mathFunction2(myExpression, childAns);
+			childAns = childs.get(0).evaluate(x,y);
+			return  mathFunction(myExpression, childAns);
 		}else{
-			System.out.println(".........."+mathFunction2(myExpression,x,y));
-			return mathFunction2(myExpression,x,y);
+			System.out.println(".........."+mathFunction(myExpression,x,y));
+			return mathFunction(myExpression,x,y);
 		}
 	}
 
-	double mathFunction2(String expression, double x, double y){
+	double mathFunction(String expression, double x, double y){
 		if(expression.equals("x")){
 			return x;
 		}else if(expression.equals("-x")){
@@ -161,7 +154,7 @@ class Expression{
 		
 	}
 
-	double mathFunction2(String expression, double argue){
+	double mathFunction(String expression, double argue){
 		System.out.println(expression + " " + argue);
 		if(expression.equals("sin")){
 			return Math.sin(argue);
@@ -172,7 +165,7 @@ class Expression{
 		return argue;
 	}
 
-	double mathFunction2a(double a, String operator, double b){
+	double mathFunction(double a, String operator, double b){
 		if(operator.equals("+")){
 			return a + b;
 		}else if( operator.equals("-") ){
@@ -189,65 +182,72 @@ class Expression{
 }
 
 class Question extends Expression{
-	private static Scanner scString = new Scanner( System.in );
-	private static Scanner scDouble = new Scanner( System.in );
+
 	double X0;
 	double Y0;
 	double h;
 	double n;
-	double X;
-	double x,y; // dummy use
 	
 	Question(){
+		super();
+		Scanner sc = new Scanner( System.in );
+		System.out.print("Value of X0 : ");
+		X0 = sc.nextDouble();
+		System.out.print("Value of Y0 : ");
+		Y0 = sc.nextDouble();
+		System.out.print("Value of h : ");
+		h = sc.nextDouble();
+		System.out.print("Value of n : ");
+		n = sc.nextDouble();
 
-		System.out.print("Enter Function = ");
-		String function = scString.nextLine();
-		System.out.print("Value of X0 = ");
-		X0 = scDouble.nextDouble();
-		System.out.print("Value of Y0 = ");
-		Y0 = scDouble.nextDouble();
-		System.out.print("Value of h = ");
-		h = scDouble.nextDouble();
-		System.out.print("Value of n = ");
-		n = scDouble.nextDouble();
-		System.out.print("Value of X  = ");
-		X = scDouble.nextDouble();
-		x = X0;
-		y = Y0;
-
-		super.setAllExpressions( function );
-		createStructure();
-	}
-
-	Question(double X0, double Y0, double h, double n, double X){
-		this.X0 = X0;
-		this.Y0 = Y0;
-		this.h = h;
-		this.n = n;
-		this.X = X;
-		this.x = X0;
-		this.y = Y0;
-	}
-
-	double function(double x, double y){
-		return x + y;
 	}
 }
 
 class Euler extends Question{
-
 	Euler(){
 		super();
 	}
 
-	Euler(double X0, double Y0, double h, double n, double X){
-		super(X0, Y0, h, n, X);
-	}
-	double answer(){
-		while( x < X ){
-			y = y + ( h *evaluate2(x,y));
+	double solve(){
+		Scanner sc = new Scanner( System.in );
+		System.out.print("Value of X ( y(x) ) : ");
+		double X = sc.nextDouble();
+		double x = X0;
+		double y = Y0;
+
+		while(x != X && x < X){
+			
+			y = y + h * evaluate(x,y);
 			x = x + h;
+			System.out.println(x);
 		}
+
+		return y;
+	}
+}
+
+class ModifiedEuler extends Question{
+	ModifiedEuler(){
+		super();
+	}
+
+	double solve(){
+		Scanner sc = new Scanner( System.in );
+		System.out.print("Value of X ( y(x) ) : ");
+		double X = sc.nextDouble();
+		double x = X0;
+		double y = Y0;
+		double k1,k2;
+
+		while(x != X && x < X){
+			
+			k1 = h * evaluate(x,y);
+			k2 = h * evaluate(x + h, y + k1);
+			y = y + ( (k1 + k2) / 2 );
+			x = x + h;
+			System.out.println(x);
+		}
+
 		return y;
 	}
 }
