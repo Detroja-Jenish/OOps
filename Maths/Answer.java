@@ -34,6 +34,7 @@ class Expression{
 
 	Expression(){
 		Scanner sc = new Scanner( System.in );
+		System.out.print("Enter Function : ");
 		String function = sc.nextLine();
 		allExpressions = function.split(" ");
 
