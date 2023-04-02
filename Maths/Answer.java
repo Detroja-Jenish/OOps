@@ -74,12 +74,16 @@ class Expression{
 			relation = allExpressions[index];
 			System.out.println("applied relation   " + allExpressions[ index ] + "  to  " + myExpression);
 			createStructure(allExpressions, index + 1);
-		}else if(myExpression.equals("(") || allExpressions[ index ].equals("(")){
+		}else if(myExpression.equals("(") ){
 			//child Node
 			System.out.println( "child node created.... "+ allExpressions[ index ]);
 			childNode = new Expression( this, allExpressions[ index ]);
-			//childs.add( childNode );
 			childNode.createStructure( allExpressions, index+1);
+		}else if(allExpressions[ index ].equals("(")){
+			//child Node
+			System.out.println( "child node created.... "+ allExpressions[ index + 1 ]);
+			childNode = new Expression( this, allExpressions[ index + 1 ]);
+			childNode.createStructure( allExpressions, index+2);
 		}else if( allExpressions[ index ].equals(")") ){
 			System.out.println( "Back to the parentNode" ); 
 			parentNode.createStructure( allExpressions, index + 1 );
