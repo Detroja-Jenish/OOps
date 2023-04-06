@@ -11,12 +11,13 @@ import java.util.Scanner;
 public class Answer{
 	public static void main(String args[]){
 
-		RK4 e = new RK4();
+		Euler e = new Euler();
+		//e.print(0.5, 9);
 
 		System.out.println("\n\n\n\n\n");
 		//e.print();
 		//System.out.println("\n\n\n\n\n");
-		System.out.println("\n\nanswer at ( 4, 2 ) = " + e.evaluate(4,2));
+		//System.out.println("\n\nanswer at ( 4, 2 ) = " + e.evaluate(4,2));
 		System.out.println("solved answer = " + e.solve());
 	}
 }
@@ -115,6 +116,32 @@ class Expression{
 		neighbourNode.print();
 
 	}
+	String selfPlace(double x, double y, String exp){
+		if(exp.equals("x")){
+			return Double.toString(x);
+		}else if( exp.equals("y") ){
+			return Double.toString(y);
+		}
+
+		return exp;
+	}
+	void print(double x, double y){
+		System.out.print( selfPlace(x, y, myExpression) );
+		if(childNode != null){
+			if( !myExpression.equals("(") ){
+				System.out.print("( ");
+			}
+			childNode.print(x, y);
+			System.out.print(" )");
+		}
+		if(relation != null){
+			System.out.print( " " + relation + " ");
+		}
+		if(neighbourNode == null){
+			return;
+		}
+		neighbourNode.print(x, y);
+	}
 
 	double evaluate( double x, double y){
 		if(neighbourNode == null){
@@ -131,7 +158,7 @@ class Expression{
 			childAns = childNode.evaluate(x,y);
 			return  mathFunction(myExpression, childAns);
 		}else{
-			System.out.println(".........."+mathFunction(myExpression,x,y));
+//			System.out.println(".........."+mathFunction(myExpression,x,y));
 			return mathFunction(myExpression,x,y);
 		}
 	}
@@ -219,12 +246,22 @@ class Euler extends Question{
 		double X = sc.nextDouble();
 		double x = X0;
 		double y = Y0;
+		int i = 1; // itteration couter
 
 		while(x != X && x < X){
-			
+
 			y = y + h * evaluate(x,y);
+			System.out.println("y" + i + " = y" + (i-1) +" + h * f(x" + (i-1) + ",y" + (i-1) + ")");
+			System.out.println("y = "+ y + " + " + h + " * f( "+x+","+y+" )");
+			System.out.print("  = " + y + " + " + h + " * ( ");
+			print(x, y);
+			System.out.println(" ) ");
+			System.out.println("y = " + y);
+			//print(x,y);
+
 			x = x + h;
-			System.out.println(x);
+			i++;
+			//System.out.println(x);
 		}
 
 		return y;
