@@ -3,9 +3,9 @@ public class Execption1{
 		Age jenish = new Age( 17 );
 	//	try{
 			jenish.vote();
-	//	}catch(Exception e){
-	//		System.out.print(e);
-	//	}
+		//}catch(Exception e){
+		//	System.out.print(e);
+		//}
 	}
 }
 
@@ -15,12 +15,12 @@ class Age{
 		this.age = age;
 	}
 	
-	void vote(){
-		if(age >= 18){
-			System.out.println("you are eligible");
-		}else{
-			throw new Exception("you are not eligible");
-		}
+	void vote() throws Exception{
+			if(age >= 18){
+				System.out.println("you are eligible");
+			}else{
+				throw new Exception("you are not eligible");
+			}
 	}
 }
-		
+

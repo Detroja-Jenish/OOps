@@ -4,6 +4,7 @@ public class ThreadDemo1{
 		MyThread mt2 = new MyThread("bye........");
 		mt1.thread.start();
 		mt2.thread.start();
+		new MyThread();
 	}
 }
 
