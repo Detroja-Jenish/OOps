@@ -1,7 +1,14 @@
 public class abstractDemo2{
 	public static void main(String args[]){
 		EventDemo ed = new EventDemo();
-		ed.callAll();
+		ed.performEvent();
+		ed.mouseClicked();
+		ed.mousePressed();
+		ed.mouseReleased();
+		ed.mouseMoved();
+		ed.mouseDragged();
+		ed.keyPressed();
+		ed.keyReleased();
 	}
 }
 
@@ -32,14 +39,4 @@ public	void mouseDragged(){System.out.println("mouseDragged");}
 public	void keyPressed(){System.out.println("keyPressed");}
 public	void keyReleased(){System.out.println("keyReleased");}
 
-	void callAll(){
-		performEvent();
-		mouseClicked();
-		mousePressed();
-		mouseReleased();
-		mouseMoved();
-		mouseDragged();
-		keyPressed();
-		keyReleased();
-	}
 }
